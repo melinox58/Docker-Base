@@ -1,0 +1,39 @@
+services:
+
+  server:
+    build:
+      context: .
+      dockerfile: ./automation/docker/Dockerfile
+    container_name: blog-server
+    volumes:
+      - ./:/var/www/html  # Volume monté pour votre application
+      - ./temp-symfony:/app/temp-symfony  # Volume monté pour le projet Symfony
+    links:
+      - db
+    ports:
+      - 80:80
+
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: example
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  mongodb:
+    image: docker.io/bitnami/mongodb:7.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - 'mongodb_data:/bitnami/mongodb'
+
+volumes:
+  mongodb_data:
+    driver: local
+
+  # Pas besoin de définir symfony_data ici, car le volume est un montage direct de répertoire
